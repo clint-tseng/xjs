@@ -1,8 +1,8 @@
 {
-  "name": "babel-preset-xjs",
+  "name": "@xjs/preset",
   "version": "7.3.3",
   "description": "Babel preset for xjs.",
-  "repository": "https://github.com/issa-tseng/xjs/tree/master/packages/babel-preset-xjs",
+  "repository": "https://github.com/issa-tseng/xjs/tree/master/packages/xjs-preset",
   "license": "MIT",
   "publishConfig": {
     "access": "private"
@@ -14,6 +14,8 @@
   ],
   "dependencies": {
     "@babel/helper-plugin-utils": "^7.0.0",
+    "@babel/plugin-proposal-pipeline-operator": "^7.0.0",
+    "@xjs/plugin-transform-access-as-function": "^7.0.0",
     "@xjs/plugin-transform-guard": "^7.0.0"
   },
   "peerDependencies": {

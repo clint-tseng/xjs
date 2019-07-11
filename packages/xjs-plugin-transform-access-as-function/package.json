@@ -1,8 +1,7 @@
 {
-  "name": "@xjs/plugin-transform-guard",
+  "name": "@xjs/plugin-transform-access-as-function",
   "version": "7.0.0",
-  "description": "This plugin transforms xjs guard constructs",
-  "repository": "https://github.com/issa-tseng/xjs/tree/master/packages/babel-plugin-transform-guard",
+  "repository": "https://github.com/issa-tseng/xjs/tree/master/packages/xjs-plugin-transform-access-as-function",
   "license": "MIT",
   "publishConfig": {
     "access": "private"
