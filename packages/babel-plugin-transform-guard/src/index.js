@@ -8,7 +8,7 @@ export default declare(api => {
     name: "transform-guard",
 
     visitor: {
-      GuardStatement(path, ...rest) {
+      GuardStatement(path) {
         const { node } = path;
         const replacement = [];
 
