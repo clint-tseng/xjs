@@ -17,6 +17,16 @@ import defineType, {
   assertOneOf,
 } from "./utils";
 
+defineType("AccessFunctionExpression", {
+  fields: {
+    expression: {
+      validate: assertNodeType("Expression"),
+    },
+  },
+  visitor: ["expression"],
+  //aliases: ["Expression"],
+});
+
 defineType("ArrayExpression", {
   fields: {
     elements: {

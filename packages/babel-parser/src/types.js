@@ -333,6 +333,11 @@ export type FunctionDeclaration = OptFunctionDeclaration & {
   id: Identifier,
 };
 
+export type AccessFunctionExpression = NodeBase & {
+  type: "AccessFunctionExpression",
+  expression: Expression,
+};
+
 export type VariableDeclaration = DeclarationBase &
   HasDecorators & {
     type: "VariableDeclaration",

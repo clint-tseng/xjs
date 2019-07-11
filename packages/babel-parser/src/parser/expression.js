@@ -258,7 +258,8 @@ export default class ExpressionParser extends LValParser {
     const expr = this.parseExprOps(noIn, refShorthandDefaultPos);
 
     if (
-      expr.type === "ArrowFunctionExpression" &&
+      (expr.type === "ArrowFunctionExpression" ||
+        expr.type === "AccessFunctionExpression") &&
       expr.start === potentialArrowAt
     ) {
       return expr;
@@ -303,7 +304,8 @@ export default class ExpressionParser extends LValParser {
     const expr = this.parseMaybeUnary(refShorthandDefaultPos);
 
     if (
-      expr.type === "ArrowFunctionExpression" &&
+      (expr.type === "ArrowFunctionExpression" ||
+        expr.type === "AccessFunctionExpression") &&
       expr.start === potentialArrowAt
     ) {
       return expr;
@@ -526,7 +528,8 @@ export default class ExpressionParser extends LValParser {
     const expr = this.parseExprAtom(refShorthandDefaultPos);
 
     if (
-      expr.type === "ArrowFunctionExpression" &&
+      (expr.type === "ArrowFunctionExpression" ||
+        expr.type === "AccessFunctionExpression") &&
       expr.start === potentialArrowAt
     ) {
       return expr;
@@ -904,6 +907,12 @@ export default class ExpressionParser extends LValParser {
         node = this.startNode();
         this.next();
         return this.finishNode(node, "ThisExpression");
+
+      case tt.dot:
+        node = this.startNode();
+        this.next();
+        node.expression = this.parseMaybeAssign(false, refShorthandDefaultPos);
+        return this.finishNode(node, "AccessFunctionExpression");
 
       case tt.name: {
         node = this.startNode();
