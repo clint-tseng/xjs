@@ -1,6 +1,8 @@
 .npmrc
 
 .DS_Store
+*.swp
+*.swo
 /node_modules
 /.github/actions/*/node_modules
 /packages/*/node_modules

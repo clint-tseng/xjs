@@ -1,0 +1,168 @@
+PHILOSOPHIE
+===========
+
+* above all and in every case, the transformation from source to js should:
+  * be obvious
+  * remain largely readable to those only familiar with the base language
+  * transform inline (no change in line numbering)
+  * never require additional definition (corollary to previous)
+  * be commonly useful
+
+* changes to base javascript must in every case
+  improve drastically one or more of
+  and never degrade any of
+  * readability         by, for instance, the removal of junk characters
+  * performance         by, for instance, compiling succinct comprehensions to bare loops
+  * consistency         by, for instance, fixing cases where javascript is a mess
+
+SYNTAX
+======
+
+not all of these are good or final ideas.
+
+* WHITESPACE-SIGNIFICANCE
+  if / for / while / try
+  are allowed whitespace-significant indentation to signify blocks (curlies optional)
+  and do not require parens
+  single-line blocks are available with curlies
+
+* EXISTENTIAL IF? (attempt to replicate the insanely nice if-let from swift)
+  ifconst x = getX() { something(x); }
+  iflet y = getY() { something(y); }
+
+  ??? else iflet???
+
+* GUARD CONTROL FLOW
+  guard const x = maybeGet();
+  guard const y = maybeGet() else throw new Error('no y!');
+  guard const z = getZ(), y = getY(), x = getX();
+  guard a;
+  guard whatever() else panic();
+
+  the else-less case return;s
+  in the else case the else block is run.
+  given break; continue; return; or throw; in else no further transformation is performed.
+    otherwise, the else block is implicitly terminated with return;
+
+* CONDITIONAL LOOPING
+  for x in xs when x?   just continues unless condition passes
+
+* LAMBDA SIGNATURES
+  => 42                 no need for ()
+  x => x * 2            like vanilla
+  | x, y => x + y       the pipe allows clean multi-arg separation without parens
+  x => log(x); x * 2    inline-semicolon automatically chains statements; the final statement is returned
+                          (so eg adding a quick console log statement isn't a nightmare)
+                        (multiline is vanilla)
+
+* NON-RETURNING LAMBDAS (tbd)
+  -> proc()             it doesn't =equal= the value, so ->
+  x -> proc(x)          one parameter
+  | x, y -> proc(x)     multi-parameter
+                        (rest is the same)
+
+* UNARY/BINARY OPERATORS AS FUNCTIONS
+  pairs.map(+)          sugar: bare unary operators compile to two-arg functions
+  pairs.map(+ 2)        sugar: the right operand may be filled
+  pairs.filter(!?)      sugar: why isn't this in livescript?
+
+* ACCESS AS FUNCTION
+  xs.map(.length)       sugar: dangling accessors compile to one-arg functions
+  xs.map(.length - 1)   within paren, allow subsequent operators
+  xs.map(.get('subarray').map(.length))
+  const f = .map(.y)    sugar: const f = e => e.map(d => d.y)
+  xs.map(.length |> f)  sugar: xs.map(x => f(x.length))
+
+* METHOD QUICKBIND
+  f(obj..method(x, y))  sugar: f(_ => obj.method(x, y))
+  f(obj..method)        sugar: f(_ => obj.method())
+
+* EXPLICIT INLINING
+  const f = inline x => x * 72;
+                        probably too difficult to implement in reality?
+
+* UNDERSCORE INSIGNIFICANCE
+  f(| _ _ x => x)       sugar: _ terms are ignored in arglists
+
+* IF EXPRESSIONS
+  const x = if …        sugar: transforms to ternary
+
+* DELETE EXPRESSIONS
+  const x = delete a.b  sugar: delete returns its value if used where it would be useful
+
+* TRY EXPRESSIONS
+  const x = try danger();       // you only get one expression?
+
+* DOTTED KEYS
+  { options.app: app }  sugar: { options: { app } }
+
+* OPTIONAL CLASSBODY
+  class x;              sugar: class x {}
+  class x extends y;    sugar: class x extends y {}
+
+* COMMA-OPTIONAL TERMS
+  f(x y)                commas in arglists and arrays are optional (also objs if newline/shorthand)
+
+* NESTED BLOCK COMMENTS
+  /* /* x */ */         duh (or ugh take your pick)
+
+OPERATORS
+=========
+
+|>    FORWARD PIPE
+      sugar: x |> a |> b to b(a(x))
+
+>>    COMPOSE
+      sugar: f >> g to (x => f(g(x)))
+
+++    CONCATENATOR
+      sugar: a ++ b to a.concat(b)
+
+<+    APPENDOR
+      sugar: a <+ b to a.push(...b)
+
+?     EXISTENTIAL
+      sugar: a? to (a == null)
+      sugar: a ? b to (a != null) ? a : b
+
+?.    CONDITIONAL ACCESS
+      sugar: a?.b to (a == null) ? void 0 : a.b
+
+is    NAMED COMPARISON OPERATORS
+isnt  sugar: is to ===; isnt to !==
+
+not   NAMED BOOLEAN OPERATORS
+and   are just easier to read
+or
+
+|b    BITWISE OPERATORS
+&b    append b (because we usurped |)
+
+=>    BANNED
+=<    these are banned because why
+
+COMPREHENSIONS
+==============
+[ x in xs | x * 2 ]                   yields a value-returning comprehension
+[ x, idx in xs | `${idx}: ${x}` ]     second-arg key
+
+[ x in xs when x > 4 | x ]            guard; unmatched values omitted
+
+[ x in xs | y in x.ys | y - 1 ]       flat comprehension; nesting reads left to right
+[ x in xs | [ y in x.ys | y - 1 ] ]   (nonflat comprehension)
+
+[ k of obj | k ]                      object-to-array comprehension; key-first obj idx (perf)
+{ _ v of obj | [ v : v ] }            object-to-object comprehension
+                                      _ terms are ignored
+
+[ x in xs |
+  const temp = x.compute();
+  yield temp + (temp * 2); ]          multiline bodies are okay, but require a yield keyword
+                                      but also try to avoid doing this probably?
+
+MAYBE (but then again maybe not)
+================================
+
+* BACKCALLS?
+  x <= proc(2, 4)       sugar: as in livescript
+
