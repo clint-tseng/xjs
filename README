@@ -15,22 +15,8 @@ PHILOSOPHIE
   * performance         by, for instance, compiling succinct comprehensions to bare loops
   * consistency         by, for instance, fixing cases where javascript is a mess
 
-SYNTAX
-======
-
-not all of these are good or final ideas.
-
-* WHITESPACE-SIGNIFICANCE
-  if / for / while / try
-  are allowed whitespace-significant indentation to signify blocks (curlies optional)
-  and do not require parens
-  single-line blocks are available with curlies
-
-* EXISTENTIAL IF? (attempt to replicate the insanely nice if-let from swift)
-  ifconst x = getX() { something(x); }
-  iflet y = getY() { something(y); }
-
-  ??? else iflet???
+IMPLEMENTED
+===========
 
 * GUARD CONTROL FLOW
   guard const x = maybeGet();
@@ -44,8 +30,35 @@ not all of these are good or final ideas.
   given break; continue; return; or throw; in else no further transformation is performed.
     otherwise, the else block is implicitly terminated with return;
 
-* CONDITIONAL LOOPING
-  for x in xs when x?   just continues unless condition passes
+  * BUG: spread destructuring does not work.
+  * BUG: guard a; outputs an extra ; artifact.
+  * INCOMPLETE: affects line numbering.
+
+* |> FORWARD PIPE (using f# es proposal)
+  sugar: x |> a |> b to b(a(x))
+
+  * INCOMPLETE: affects line numbering.
+
+* ACCESS AS FUNCTION
+  xs.map(.length)       sugar: dangling accessors compile to one-arg functions
+  xs.map(.length - 1)   within paren, allow subsequent operators
+  xs.map(.get('subarray').map(.length))
+  const f = .map(.y)    sugar: const f = e => e.map(d => d.y)
+  xs.map(.length |> f)  sugar: xs.map(x => f(x.length))
+
+  * INCOMPLETE: affects line numbering.
+
+
+PROBABLY
+========
+
+not all of these are good or final ideas.
+
+* EXISTENTIAL IF? (attempt to replicate the insanely nice if-let from swift)
+  ifconst x = getX() { something(x); }
+  iflet y = getY() { something(y); }
+
+  ??? else iflet???
 
 * LAMBDA SIGNATURES
   => 42                 no need for ()
@@ -66,14 +79,7 @@ not all of these are good or final ideas.
   pairs.map(+ 2)        sugar: the right operand may be filled
   pairs.filter(!?)      sugar: why isn't this in livescript?
 
-* ACCESS AS FUNCTION
-  xs.map(.length)       sugar: dangling accessors compile to one-arg functions
-  xs.map(.length - 1)   within paren, allow subsequent operators
-  xs.map(.get('subarray').map(.length))
-  const f = .map(.y)    sugar: const f = e => e.map(d => d.y)
-  xs.map(.length |> f)  sugar: xs.map(x => f(x.length))
-
-* METHOD QUICKBIND
+* METHOD QUICKBIND (es proposal exists)
   f(obj..method(x, y))  sugar: f(_ => obj.method(x, y))
   f(obj..method)        sugar: f(_ => obj.method())
 
@@ -106,11 +112,9 @@ not all of these are good or final ideas.
 * NESTED BLOCK COMMENTS
   /* /* x */ */         duh (or ugh take your pick)
 
+
 OPERATORS
 =========
-
-|>    FORWARD PIPE
-      sugar: x |> a |> b to b(a(x))
 
 >>    COMPOSE
       sugar: f >> g to (x => f(g(x)))
@@ -135,11 +139,12 @@ not   NAMED BOOLEAN OPERATORS
 and   are just easier to read
 or
 
-|b    BITWISE OPERATORS
-&b    append b (because we usurped |)
+.|    BITWISE OPERATORS
+.&    (because we usurped |)
 
 =>    BANNED
 =<    these are banned because why
+
 
 COMPREHENSIONS
 ==============
@@ -160,8 +165,18 @@ COMPREHENSIONS
   yield temp + (temp * 2); ]          multiline bodies are okay, but require a yield keyword
                                       but also try to avoid doing this probably?
 
+
 MAYBE (but then again maybe not)
 ================================
+
+* WHITESPACE-SIGNIFICANCE
+  if / for / while / try
+  are allowed whitespace-significant indentation to signify blocks (curlies optional)
+  and do not require parens
+  single-line blocks are available with curlies
+
+* CONDITIONAL LOOPING
+  for x in xs when x?   just continues unless condition passes
 
 * BACKCALLS?
   x <= proc(2, 4)       sugar: as in livescript
