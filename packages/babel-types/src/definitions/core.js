@@ -384,6 +384,25 @@ defineType("FunctionExpression", {
   },
 });
 
+defineType("GuardStatement", {
+  visitor: ["test", "declaration", "alternate"],
+  //aliases: ["Statement"],
+  fields: {
+    test: {
+      optional: true,
+      validate: assertNodeType("Expression"),
+    },
+    declaration: {
+      optional: true,
+      validate: assertNodeType("VariableDeclaration"),
+    },
+    alternate: {
+      optional: true,
+      validate: assertNodeType("Statement"),
+    },
+  },
+});
+
 export const patternLikeCommon = {
   typeAnnotation: {
     // TODO: @babel/plugin-transform-flow-comments puts a Noop here, is there a better way?

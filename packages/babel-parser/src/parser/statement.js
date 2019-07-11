@@ -201,6 +201,9 @@ export default class StatementParser extends ExpressionParser {
       case tt._try:
         return this.parseTryStatement(node);
 
+      case tt._guard:
+        return this.parseGuardStatement(node);
+
       case tt._const:
       case tt._var:
         kind = kind || this.state.value;
@@ -692,13 +695,28 @@ export default class StatementParser extends ExpressionParser {
     return this.finishNode(node, "TryStatement");
   }
 
+  parseGuardStatement(node: N.GuardDeclaration): N.GuardDeclaration {
+    this.next();
+
+    // TODO: unexpected on single-statement context
+    const kind = this.state.value;
+    if ((kind === 'var') || (kind === 'let') || (kind === 'const'))
+      node.declaration = this.parseVarStatement(this.startNode(), kind, true);
+    else
+      node.test = this.parseExpression();
+    node.alternate = this.eat(tt._else) ? this.parseStatement("if") : null; // TODO: if context??
+    return this.finishNode(node, "GuardStatement");
+  }
+
   parseVarStatement(
     node: N.VariableDeclaration,
     kind: "var" | "let" | "const",
+    isGuard: ?boolean,
   ): N.VariableDeclaration {
     this.next();
     this.parseVar(node, false, kind);
-    this.semicolon();
+
+    if (!isGuard && this.lookahead().type !== tt.else) this.semicolon();
     return this.finishNode(node, "VariableDeclaration");
   }
 

@@ -230,6 +230,13 @@ export type ContinueStatement = NodeBase & {
   label: ?Identifier,
 };
 
+export type GuardStatement = NodeBase & {
+  type: "GuardStatement",
+  declaration: ?VariableDeclaration,
+  test: ?Expression,
+  alternate: ?Statement,
+};
+
 // Choice
 
 export type IfStatement = NodeBase & {
