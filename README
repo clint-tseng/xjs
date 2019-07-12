@@ -49,6 +49,7 @@ IMPLEMENTED
 
   * BUG: spread destructuring does not work.
   * BUG: guard a; outputs an extra ; artifact.
+  * IMPROVE: allow use of guard as binding name.
   * INCOMPLETE: affects line numbering.
 
 * ACCESS AS FUNCTION
@@ -124,19 +125,19 @@ not all of these are good or final ideas.
 COMPREHENSIONS
 ==============
 
-[ x * 2 | x in xs ]                   yields a value-returning comprehension
-[ `${idx}: ${x}` | x, idx in xs ]     second-arg key
+[ x * 2 for x in xs ]                   yields a value-returning comprehension
+[ `${idx}: ${x}` for x, idx in xs ]     second-arg key
 
-[ x | x in xs when x > 4 ]            guard; unmatched values omitted
+[ x for x in xs when x > 4 ]            guard; unmatched values omitted
 
-[ y - 1 | y in x.ys | x in xs ]       flat comprehension; nesting reads left to right
-[ [ y in x.ys | y - 1 ] | x in xs ]   (nonflat comprehension)
+[ y - 1 for y in x.ys for x in xs ]     flat comprehension; nesting reads left to right
+[ [ y in x.ys for y - 1 ] for x in xs ] (nonflat comprehension)
 
-[ k | k of obj ]                      object-to-array comprehension; key-first obj idx (perf)
-{ [ v : v ] | _, v of obj }           object-to-object comprehension
-                                      _ terms are ignored
+[ k for k of obj ]                      object-to-array comprehension; key-first obj idx (perf)
+{ [ v : v ] for _, v of obj }           object-to-object comprehension
+                                        _ terms are ignored
 
-[ do { … } | x in xs ]                use do if you need a block
+[ do { … } for x in xs ]                use do if you need a block
 
 MAYBE (but then again maybe not)
 ================================
