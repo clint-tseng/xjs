@@ -716,7 +716,13 @@ export default class StatementParser extends ExpressionParser {
     this.next();
     this.parseVar(node, false, kind);
 
-    if (!isGuard && this.lookahead().type !== tt.else) this.semicolon();
+    if (isGuard && this.lookahead().type === tt.else) { /* do nothing */ }
+    else if (this.match(tt.braceL)) {
+      node.consequent = this.parseBlock();
+      this.semicolon();
+    }
+    else { this.semicolon(); }
+
     return this.finishNode(node, "VariableDeclaration");
   }
 

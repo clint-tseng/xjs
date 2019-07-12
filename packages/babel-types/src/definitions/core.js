@@ -912,6 +912,10 @@ defineType("VariableDeclarator", {
       optional: true,
       validate: assertNodeType("Expression"),
     },
+    consequent: {
+      optional: true,
+      validate: assertNodeType("BlockStatement"),
+    },
   },
 });
 

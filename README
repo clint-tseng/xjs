@@ -60,15 +60,20 @@ IMPLEMENTED
 
   * INCOMPLETE: affects line numbering.
 
+* DECLARATION EXISTENTIAL (attempt to replicate the insanely nice if-let from swift)
+  const x = getX() { something(x); }
+  let y = getY() { something(y); }
+
+  * INCOMPLETE: affects line numbering.
+
 
 PROBABLY
 ========
 
 not all of these are good or final ideas.
 
-* DECLARATION BLOCK (attempt to replicate the insanely nice if-let from swift)
-  const x = getX() { something(x); }
-  let y = getY() { something(y); }
+* ?? POSTFIX EXISTENTIAL
+  sugar: a?? to (a == null)
 
 * LAMBDA SIGNATURES
   => 42                 no need for ()
@@ -79,7 +84,9 @@ not all of these are good or final ideas.
   -> proc()             it doesn't =equal= the value, so ->
   x -> proc(x)          one parameter
   | x, y -> proc(x)     multi-parameter
-                        (rest is the same)
+
+* .| .& BITWISE OPERATORS
+  (because we usurped |)
 
 * UNARY/BINARY OPERATORS AS FUNCTIONS
   pairs.map(+)          sugar: bare unary operators compile to two-arg functions
@@ -100,73 +107,56 @@ not all of these are good or final ideas.
   class x;              sugar: class x {}
   class x extends y;    sugar: class x extends y {}
 
-* COMMA-OPTIONAL TERMS
-  f(x y)                commas in arglists and arrays are optional (also objs if newline/shorthand)
-
 * NESTED BLOCK COMMENTS
   /* /* x */ */         duh (or ugh take your pick)
 
+* >> COMPOSE
+  sugar: f >> g to (x => f(g(x)))
 
-OPERATORS
-=========
+* is isnt NAMED COMPARISON OPERATORS
+  sugar: is to ===; isnt to !==
 
->>    COMPOSE
-      sugar: f >> g to (x => f(g(x)))
-
-++    CONCATENATOR
-      sugar: a ++ b to a.concat(b)
-
-<+    APPENDOR
-      sugar: a <+ b to a.push(...b)
-
-??    POSTFIX EXISTENTIAL
-      sugar: a?? to (a == null)
-
-is    NAMED COMPARISON OPERATORS
-isnt  sugar: is to ===; isnt to !==
-
-not   NAMED BOOLEAN OPERATORS
-and   are just easier to read
-or
-
-.|    BITWISE OPERATORS
-.&    (because we usurped |)
-
-=>    BANNED
-=<    these are banned because why
+* not and or NAMED BOOLEAN OPERATORS
+  are just easier to read
 
 
 COMPREHENSIONS
 ==============
-[ x in xs | x * 2 ]                   yields a value-returning comprehension
-[ x, idx in xs | `${idx}: ${x}` ]     second-arg key
 
-[ x in xs when x > 4 | x ]            guard; unmatched values omitted
+[ x * 2 | x in xs ]                   yields a value-returning comprehension
+[ `${idx}: ${x}` | x, idx in xs ]     second-arg key
 
-[ x in xs | y in x.ys | y - 1 ]       flat comprehension; nesting reads left to right
-[ x in xs | [ y in x.ys | y - 1 ] ]   (nonflat comprehension)
+[ x | x in xs when x > 4 ]            guard; unmatched values omitted
 
-[ k of obj | k ]                      object-to-array comprehension; key-first obj idx (perf)
-{ _ v of obj | [ v : v ] }            object-to-object comprehension
+[ y - 1 | y in x.ys | x in xs ]       flat comprehension; nesting reads left to right
+[ [ y in x.ys | y - 1 ] | x in xs ]   (nonflat comprehension)
+
+[ k | k of obj ]                      object-to-array comprehension; key-first obj idx (perf)
+{ [ v : v ] | _, v of obj }           object-to-object comprehension
                                       _ terms are ignored
 
-[ x in xs |
-  const temp = x.compute();
-  yield temp + (temp * 2); ]          multiline bodies are okay, but require a yield keyword
-                                      but also try to avoid doing this probably?
-
+[ do { … } | x in xs ]                use do if you need a block
 
 MAYBE (but then again maybe not)
 ================================
+
+* COMMA-OPTIONAL TERMS
+  f(x y)                commas in arglists and arrays are optional (also objs if newline/shorthand)
+
+* ++ CONCATENATOR
+  sugar: a ++ b to a.concat(b)
+
+* <+ APPENDOR
+  sugar: a <+ b to a.push(...b)
+
+* CONDITIONAL LOOPING
+  for x in xs when x?   just continues unless condition passes
 
 * WHITESPACE-SIGNIFICANCE
   if / for / while / try
   are allowed whitespace-significant indentation to signify blocks (curlies optional)
   and do not require parens
   single-line blocks are available with curlies
-
-* CONDITIONAL LOOPING
-  for x in xs when x?   just continues unless condition passes
 
 * these are likely usurped by do expressions:
 

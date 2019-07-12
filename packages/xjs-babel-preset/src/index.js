@@ -8,6 +8,7 @@ import doExpr from "@babel/plugin-proposal-do-expressions";
 
 import guard from "@xjs/plugin-transform-guard";
 import accessAsFunction from "@xjs/plugin-transform-access-as-function";
+import declarationExistential from "@xjs/plugin-transform-declaration-existential";
 
 export default declare(
   (api) => {
@@ -24,6 +25,7 @@ export default declare(
       // xjs plugins:
       [ guard ],
       [ accessAsFunction ],
+      [ declarationExistential ],
     ] }] };
   },
 );
