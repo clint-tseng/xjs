@@ -66,14 +66,15 @@ IMPLEMENTED
 
   * INCOMPLETE: affects line numbering.
 
+* ? PREFIX EXISTENCE
+  sugar: ?a to (a == null)
+  sugar: !?a to (a != null)
+
 
 PROBABLY
 ========
 
 not all of these are good or final ideas.
-
-* ?? POSTFIX EXISTENTIAL
-  sugar: a?? to (a == null)
 
 * LAMBDA SIGNATURES
   => 42                 no need for ()

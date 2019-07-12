@@ -21,7 +21,8 @@
     "@babel/plugin-proposal-do-expressions": "^7.0.0",
     "@xjs/plugin-transform-access-as-function": "^7.0.0",
     "@xjs/plugin-transform-guard": "^7.0.0",
-    "@xjs/plugin-transform-declaration-existential": "^7.0.0"
+    "@xjs/plugin-transform-declaration-existential": "^7.0.0",
+    "@xjs/plugin-transform-existence": "^7.0.0"
   },
   "peerDependencies": {
     "@babel/core": "^7.0.0-0"

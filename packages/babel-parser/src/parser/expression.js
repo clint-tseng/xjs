@@ -471,6 +471,9 @@ export default class ExpressionParser extends LValParser {
       node.operator = this.state.value;
       node.prefix = true;
 
+      // definitely a hack but i don't know what question value does.
+      if (this.match(tt.question)) node.operator = '?';
+
       if (node.operator === "throw") {
         this.expectPlugin("throwExpressions");
       }
