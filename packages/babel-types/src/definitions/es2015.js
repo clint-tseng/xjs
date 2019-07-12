@@ -73,6 +73,9 @@ defineType("ArrowFunctionExpression", {
       // https://github.com/babel/babylon/issues/505
       validate: assertValueType("boolean"),
     },
+    operator: {
+      validate: assertValueType('string'),
+    },
     body: {
       validate: assertNodeType("BlockStatement", "Expression"),
     },

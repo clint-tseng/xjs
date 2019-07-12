@@ -826,14 +826,15 @@ export default class ExpressionParser extends LValParser {
   }
 
   shouldParseAsyncArrow(): boolean {
-    return this.match(tt.arrow) && !this.canInsertSemicolon();
+    return (this.match(tt.arrow) || this.match(tt.singleArrow)) && !this.canInsertSemicolon();
   }
 
   parseAsyncArrowFromCallExpression(
     node: N.ArrowFunctionExpression,
     call: N.CallExpression,
   ): N.ArrowFunctionExpression {
-    this.expect(tt.arrow);
+    node.operator = this.state.type.label;
+    this.eat(tt.singleArrow) || this.expect(tt.arrow);
     this.parseArrowExpression(node, call.arguments, true);
     return node;
   }
@@ -938,13 +939,15 @@ export default class ExpressionParser extends LValParser {
           !this.canInsertSemicolon()
         ) {
           const params = [this.parseIdentifier()];
-          this.expect(tt.arrow);
+          node.operator = this.state.type.label;
+          this.eat(tt.singleArrow) || this.expect(tt.arrow);
           // let foo = async bar => {};
           this.parseArrowExpression(node, params, true);
           return node;
         }
 
-        if (canBeArrow && this.match(tt.arrow) && !this.canInsertSemicolon()) {
+        if (canBeArrow && (this.match(tt.arrow) || this.match(tt.singleArrow)) && !this.canInsertSemicolon()) {
+          node.operator = this.state.type.label;
           this.next();
           this.parseArrowExpression(node, [id], false);
           return node;
@@ -1330,7 +1333,8 @@ export default class ExpressionParser extends LValParser {
   }
 
   parseArrow(node: N.ArrowFunctionExpression): ?N.ArrowFunctionExpression {
-    if (this.eat(tt.arrow)) {
+    if (this.eat(tt.arrow) || this.eat(tt.singleArrow)) {
+      node.operator = this.state.type.label;
       return node;
     }
   }
@@ -2225,7 +2229,7 @@ export default class ExpressionParser extends LValParser {
     pipelineStyle: N.PipelineStyle,
     startPos: number,
   ): void {
-    if (this.match(tt.arrow)) {
+    if (this.match(tt.arrow) || this.match(tt.singleArrow)) {
       // If the following token is invalidly `=>`, then throw a human-friendly error
       // instead of something like 'Unexpected token, expected ";"'.
       throw this.raise(

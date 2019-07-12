@@ -547,6 +547,12 @@ export default class Tokenizer extends LocationParser {
       return;
     }
 
+    if ((code === charCodes.dash) && (next === charCodes.greaterThan)) {
+      this.state.pos += 2;
+      this.finishToken(tt.singleArrow);
+      return;
+    }
+
     if (next === charCodes.equalsTo) {
       this.finishOp(tt.assign, 2);
     } else {
