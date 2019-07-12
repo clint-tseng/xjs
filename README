@@ -15,6 +15,23 @@ PHILOSOPHIE
   * performance         by, for instance, compiling succinct comprehensions to bare loops
   * consistency         by, for instance, fixing cases where javascript is a mess
 
+ENABLED ES PROPOSALS
+====================
+
+* |> FORWARD PIPE (using f# es proposal)
+  sugar: x |> a |> b to b(a(x))
+
+  * INCOMPLETE: affects line numbering.
+
+* ?. OPTIONAL CHAINING (using loose = true)
+  sugar: a?.b to (a == null) ? void 0 : a.b
+
+* ?? NULLISH COALESCE (using loose = true)
+
+* :: FUNCTION BIND
+
+* DO EXPRESSIONS
+
 IMPLEMENTED
 ===========
 
@@ -34,11 +51,6 @@ IMPLEMENTED
   * BUG: guard a; outputs an extra ; artifact.
   * INCOMPLETE: affects line numbering.
 
-* |> FORWARD PIPE (using f# es proposal)
-  sugar: x |> a |> b to b(a(x))
-
-  * INCOMPLETE: affects line numbering.
-
 * ACCESS AS FUNCTION
   xs.map(.length)       sugar: dangling accessors compile to one-arg functions
   xs.map(.length - 1)   within paren, allow subsequent operators
@@ -54,19 +66,14 @@ PROBABLY
 
 not all of these are good or final ideas.
 
-* EXISTENTIAL IF? (attempt to replicate the insanely nice if-let from swift)
-  ifconst x = getX() { something(x); }
-  iflet y = getY() { something(y); }
-
-  ??? else iflet???
+* DECLARATION BLOCK (attempt to replicate the insanely nice if-let from swift)
+  const x = getX() { something(x); }
+  let y = getY() { something(y); }
 
 * LAMBDA SIGNATURES
   => 42                 no need for ()
   x => x * 2            like vanilla
   | x, y => x + y       the pipe allows clean multi-arg separation without parens
-  x => log(x); x * 2    inline-semicolon automatically chains statements; the final statement is returned
-                          (so eg adding a quick console log statement isn't a nightmare)
-                        (multiline is vanilla)
 
 * NON-RETURNING LAMBDAS (tbd)
   -> proc()             it doesn't =equal= the value, so ->
@@ -79,25 +86,12 @@ not all of these are good or final ideas.
   pairs.map(+ 2)        sugar: the right operand may be filled
   pairs.filter(!?)      sugar: why isn't this in livescript?
 
-* METHOD QUICKBIND (es proposal exists)
-  f(obj..method(x, y))  sugar: f(_ => obj.method(x, y))
-  f(obj..method)        sugar: f(_ => obj.method())
-
 * EXPLICIT INLINING
   const f = inline x => x * 72;
                         probably too difficult to implement in reality?
 
 * UNDERSCORE INSIGNIFICANCE
   f(| _ _ x => x)       sugar: _ terms are ignored in arglists
-
-* IF EXPRESSIONS
-  const x = if …        sugar: transforms to ternary
-
-* DELETE EXPRESSIONS
-  const x = delete a.b  sugar: delete returns its value if used where it would be useful
-
-* TRY EXPRESSIONS
-  const x = try danger();       // you only get one expression?
 
 * DOTTED KEYS
   { options.app: app }  sugar: { options: { app } }
@@ -125,12 +119,8 @@ OPERATORS
 <+    APPENDOR
       sugar: a <+ b to a.push(...b)
 
-?     EXISTENTIAL
-      sugar: a? to (a == null)
-      sugar: a ? b to (a != null) ? a : b
-
-?.    CONDITIONAL ACCESS
-      sugar: a?.b to (a == null) ? void 0 : a.b
+??    POSTFIX EXISTENTIAL
+      sugar: a?? to (a == null)
 
 is    NAMED COMPARISON OPERATORS
 isnt  sugar: is to ===; isnt to !==
@@ -177,6 +167,17 @@ MAYBE (but then again maybe not)
 
 * CONDITIONAL LOOPING
   for x in xs when x?   just continues unless condition passes
+
+* these are likely usurped by do expressions:
+
+  * IF EXPRESSIONS
+    const x = if …        sugar: transforms to ternary
+
+  * DELETE EXPRESSIONS
+    const x = delete a.b  sugar: delete returns its value if used where it would be useful
+
+  * TRY EXPRESSIONS
+    const x = try danger();       // you only get one expression?
 
 * BACKCALLS?
   x <= proc(2, 4)       sugar: as in livescript
