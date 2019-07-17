@@ -23,7 +23,8 @@
     "@xjs/plugin-transform-guard": "^7.0.0",
     "@xjs/plugin-transform-declaration-existential": "^7.0.0",
     "@xjs/plugin-transform-existence": "^7.0.0",
-    "@xjs/plugin-transform-arrow": "^7.0.0"
+    "@xjs/plugin-transform-arrow": "^7.0.0",
+    "@xjs/plugin-transform-underscore-parameters": "^7.0.0"
   },
   "peerDependencies": {
     "@babel/core": "^7.0.0-0"

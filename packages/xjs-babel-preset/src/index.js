@@ -11,6 +11,7 @@ import accessAsFunction from "@xjs/plugin-transform-access-as-function";
 import declarationExistential from "@xjs/plugin-transform-declaration-existential";
 import existence from "@xjs/plugin-transform-existence";
 import arrow from "@xjs/plugin-transform-arrow";
+import underscore from "@xjs/plugin-transform-underscore-parameters";
 
 export default declare(
   (api) => {
@@ -30,6 +31,7 @@ export default declare(
       [ declarationExistential ],
       [ existence ],
       [ arrow ],
+      [ underscore ],
     ] }] };
   },
 );

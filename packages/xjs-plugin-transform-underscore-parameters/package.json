@@ -1,0 +1,24 @@
+{
+  "name": "@xjs/plugin-transform-underscore-parameters",
+  "version": "7.0.0",
+  "description": "This plugin transforms xjs underscore parameters",
+  "repository": "https://github.com/issa-tseng/xjs/tree/master/packages/xjs-plugin-underscore-parameters",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "private"
+  },
+  "main": "lib/index.js",
+  "keywords": [
+    "babel-plugin"
+  ],
+  "dependencies": {
+    "@babel/helper-plugin-utils": "^7.0.0"
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.0.0-0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/helper-plugin-test-runner": "^7.0.0"
+  }
+}

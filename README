@@ -77,8 +77,15 @@ IMPLEMENTED
   | x, y => x + y       the pipe allows clean multi-arg separation without parens
   | x, y -> proc(x, y)  multi-parameter
 
+  * BUG: pipe and single arrow do not yet mix.
+
 * NON-RETURNING LAMBDAS (it doesn't =equal= the value, so ->)
   sugar: x -> proc(x) to x => { proc(x); }
+
+* UNDERSCORE INSIGNIFICANCE
+  f(| _ _ x => x)       sugar: _ terms are ignored in arglists
+
+  * IMPROVE: reset ref count per scope?
 
 PROBABLY
 ========
@@ -93,9 +100,6 @@ not all of these are good or final ideas.
 * EXPLICIT INLINING
   const f = inline x => x * 72;
                         probably too difficult to implement in reality?
-
-* UNDERSCORE INSIGNIFICANCE
-  f(| _ _ x => x)       sugar: _ terms are ignored in arglists
 
 * DOTTED KEYS
   { options.app: app }  sugar: { options: { app } }
