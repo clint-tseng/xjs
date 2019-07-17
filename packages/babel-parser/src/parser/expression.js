@@ -946,7 +946,12 @@ export default class ExpressionParser extends LValParser {
           return node;
         }
 
-        if (canBeArrow && (this.match(tt.arrow) || this.match(tt.singleArrow)) && !this.canInsertSemicolon()) {
+        if (
+          canBeArrow &&
+          (this.match(tt.arrow) || this.match(tt.singleArrow)) &&
+          !this.canInsertSemicolon() &&
+          !this.state.inPipeParameters
+        ) {
           node.operator = this.state.type.label;
           this.next();
           this.parseArrowExpression(node, [id], false);
@@ -954,6 +959,15 @@ export default class ExpressionParser extends LValParser {
         }
 
         return id;
+      }
+
+      case tt.arrow:
+      case tt.singleArrow: {
+        node = this.startNode();
+        node.operator = this.state.type.label;
+        this.next();
+        this.parseArrowExpression(node, [], false);
+        return node;
       }
 
       case tt._do: {
@@ -992,6 +1006,9 @@ export default class ExpressionParser extends LValParser {
       case tt._true:
       case tt._false:
         return this.parseBooleanLiteral();
+
+      case tt.bitwiseOR:
+        return this.parsePipeArrow();
 
       case tt.parenL:
         return this.parseParenAndDistinguishExpression(canBeArrow);
@@ -1328,8 +1345,68 @@ export default class ExpressionParser extends LValParser {
     return parenExpression;
   }
 
+  parsePipeArrow(): N.Expression[] {
+    const startPos = this.state.start;
+    const startLoc = this.state.startLoc;
+    this.expect(tt.bitwiseOR);
+
+    const oldMaybeInArrowParameters = this.state.maybeInArrowParameters;
+    const oldInPipeParameters = this.state.inPipeParameters;
+    const oldYieldPos = this.state.yieldPos;
+    const oldAwaitPos = this.state.awaitPos;
+    this.state.maybeInArrowParameters = true;
+    this.state.inPipeParameters = true;
+    this.state.yieldPos = 0;
+    this.state.awaitPos = 0;
+
+    const exprList = [];
+    const refShorthandDefaultPos = { start: 0 };
+    const refNeedsArrowPos = { start: 0 };
+    let first = true;
+
+    while (!this.match(tt.arrow)) {
+      if (first) {
+        first = false;
+      } else {
+        this.expect(tt.comma, refNeedsArrowPos.start || null);
+      }
+
+      if (this.match(tt.ellipsis)) {
+        exprList.push(this.parseParenItem(this.parseRestBinding()));
+        this.checkCommaAfterRest();
+        break;
+      }
+
+      exprList.push(
+        this.parseMaybeAssign(
+          false,
+          refShorthandDefaultPos,
+          this.parseParenItem,
+          refNeedsArrowPos,
+        ),
+      );
+    }
+
+    this.state.maybeInArrowParameters = oldMaybeInArrowParameters;
+    this.state.inPipeParameters = oldInPipeParameters;
+
+    const arrowNode = this.parseArrow(this.startNodeAt(startPos, startLoc));
+
+    this.checkYieldAwaitInDefaultParams();
+    this.state.yieldPos = oldYieldPos;
+    this.state.awaitPos = oldAwaitPos;
+    for (const param of exprList) {
+      if (param.extra && param.extra.parenthesized) {
+        this.unexpected(param.extra.parenStart);
+      }
+    }
+
+    this.parseArrowExpression(arrowNode, exprList, false);
+    return arrowNode;
+  }
+
   shouldParseArrow(): boolean {
-    return !this.canInsertSemicolon();
+    return !this.canInsertSemicolon() && !this.state.inPipeParameters;
   }
 
   parseArrow(node: N.ArrowFunctionExpression): ?N.ArrowFunctionExpression {

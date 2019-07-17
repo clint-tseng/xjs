@@ -15,6 +15,12 @@ function assert(type: string, node: Object, opts?: Object): void {
   }
 }
 
+export function assertAccessFunctionExpression(
+  node: Object,
+  opts?: Object = {},
+): void {
+  assert("AccessFunctionExpression", node, opts);
+}
 export function assertArrayExpression(node: Object, opts?: Object = {}): void {
   assert("ArrayExpression", node, opts);
 }
@@ -101,6 +107,9 @@ export function assertFunctionExpression(
   opts?: Object = {},
 ): void {
   assert("FunctionExpression", node, opts);
+}
+export function assertGuardStatement(node: Object, opts?: Object = {}): void {
+  assert("GuardStatement", node, opts);
 }
 export function assertIdentifier(node: Object, opts?: Object = {}): void {
   assert("Identifier", node, opts);

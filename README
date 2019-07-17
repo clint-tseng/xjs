@@ -71,6 +71,12 @@ IMPLEMENTED
   sugar: ?a to (a == null)
   sugar: !?a to (a != null)
 
+* LAMBDA SIGNATURES
+  => 42                 no need for ()
+  x => x * 2            like vanilla
+  | x, y => x + y       the pipe allows clean multi-arg separation without parens
+  | x, y -> proc(x, y)  multi-parameter
+
 * NON-RETURNING LAMBDAS (it doesn't =equal= the value, so ->)
   sugar: x -> proc(x) to x => { proc(x); }
 
@@ -78,16 +84,6 @@ PROBABLY
 ========
 
 not all of these are good or final ideas.
-
-* LAMBDA SIGNATURES
-  => 42                 no need for ()
-  -> proc()             
-  x => x * 2            like vanilla
-  | x, y => x + y       the pipe allows clean multi-arg separation without parens
-  | x, y -> proc(x, y)  multi-parameter
-
-* .| .& BITWISE OPERATORS
-  (because we usurped |)
 
 * UNARY/BINARY OPERATORS AS FUNCTIONS
   pairs.map(+)          sugar: bare unary operators compile to two-arg functions

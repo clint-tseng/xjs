@@ -5,6 +5,23 @@
  */
 import shallowEqual from "../../utils/shallowEqual";
 
+export function isAccessFunctionExpression(
+  node: ?Object,
+  opts?: Object,
+): boolean {
+  if (!node) return false;
+
+  const nodeType = node.type;
+  if (nodeType === "AccessFunctionExpression") {
+    if (typeof opts === "undefined") {
+      return true;
+    } else {
+      return shallowEqual(node, opts);
+    }
+  }
+
+  return false;
+}
 export function isArrayExpression(node: ?Object, opts?: Object): boolean {
   if (!node) return false;
 
@@ -290,6 +307,20 @@ export function isFunctionExpression(node: ?Object, opts?: Object): boolean {
 
   const nodeType = node.type;
   if (nodeType === "FunctionExpression") {
+    if (typeof opts === "undefined") {
+      return true;
+    } else {
+      return shallowEqual(node, opts);
+    }
+  }
+
+  return false;
+}
+export function isGuardStatement(node: ?Object, opts?: Object): boolean {
+  if (!node) return false;
+
+  const nodeType = node.type;
+  if (nodeType === "GuardStatement") {
     if (typeof opts === "undefined") {
       return true;
     } else {

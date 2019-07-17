@@ -5,6 +5,10 @@
  */
 import builder from "../builder";
 
+export function AccessFunctionExpression(...args: Array<any>): Object {
+  return builder("AccessFunctionExpression", ...args);
+}
+export { AccessFunctionExpression as accessFunctionExpression };
 export function ArrayExpression(...args: Array<any>): Object {
   return builder("ArrayExpression", ...args);
 }
@@ -89,6 +93,10 @@ export function FunctionExpression(...args: Array<any>): Object {
   return builder("FunctionExpression", ...args);
 }
 export { FunctionExpression as functionExpression };
+export function GuardStatement(...args: Array<any>): Object {
+  return builder("GuardStatement", ...args);
+}
+export { GuardStatement as guardStatement };
 export function Identifier(...args: Array<any>): Object {
   return builder("Identifier", ...args);
 }
