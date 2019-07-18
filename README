@@ -69,6 +69,27 @@ IMPLEMENTED
 
   * INCOMPLETE: affects line numbering.
 
+* COMPREHENSIONS
+
+  [ x * 2 for x in xs ]                   yields a value-returning comprehension
+  [ `${idx}: ${x}` for x, idx in xs ]     second-arg key
+  [ x for { x } in xs ]                   destructuring works
+
+  [ x for x in xs if x > 4 ]              guard; unmatched values omitted
+
+  [ y - 1 for y in x.ys for x in xs ]     flat comprehension; nesting reads left to right
+  [ y - 1 for y in ys for { ys } in xs ]  destructuring still works
+  [ [ y - 1 for y in x.ys ] for x in xs ] (nonflat comprehension)
+
+  [ v for v of obj ]                      object-to-array comprehension
+  { k: v for _, k of obj }                object-to-object comprehension
+                                          _ terms are ignored
+  { k: x for x in xs }                    array-to-object comprehension
+
+  [ do { … } for x in xs ]                use do if you need a block
+
+  * INCOMPLETE: affects line numbering.
+
 * ? PREFIX EXISTENCE OPERATOR
   sugar: ?a to (a == null)
   sugar: !?a to (a != null)
@@ -123,23 +144,6 @@ not all of these are good or final ideas.
 * >> COMPOSE
   sugar: f >> g to (x => f(g(x)))
 
-
-COMPREHENSIONS
-==============
-
-[ x * 2 for x in xs ]                   yields a value-returning comprehension
-[ `${idx}: ${x}` for x, idx in xs ]     second-arg key
-
-[ x for x in xs when x > 4 ]            guard; unmatched values omitted
-
-[ y - 1 for y in x.ys for x in xs ]     flat comprehension; nesting reads left to right
-[ [ y in x.ys for y - 1 ] for x in xs ] (nonflat comprehension)
-
-[ k for k of obj ]                      object-to-array comprehension; key-first obj idx (perf)
-{ [ v : v ] for _, v of obj }           object-to-object comprehension
-                                        _ terms are ignored
-
-[ do { … } for x in xs ]                use do if you need a block
 
 MAYBE (but then again maybe not)
 ================================

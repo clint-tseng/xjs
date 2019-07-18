@@ -44,12 +44,12 @@ defineType("ArrayComprehensionExpression", {
 });
 
 defineType("ComprehensionLoopExpression", {
-  visitor: ["lval", "lidx", "right"],
+  visitor: ["ival", "ikey", "right"],
   fields: {
-    lval: {
+    ival: {
       validate: assertNodeType("LVal"),
     },
-    lidx: {
+    ikey: {
       validate: assertNodeType("Identifier"),
       optional: true,
     },

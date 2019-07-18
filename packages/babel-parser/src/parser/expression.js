@@ -2124,15 +2124,15 @@ export default class ExpressionParser extends LValParser {
       const loopNode = this.startNode();
       node.loops.push(loopNode);
 
-      loopNode.lval = this.parseMaybeConditional(
+      loopNode.ival = this.parseMaybeConditional(
         true,
         refShorthandDefaultPos,
       );
-      this.toAssignable(loopNode.lval, undefined, "for comprehension value");
-      this.checkLVal(loopNode.lval, undefined, undefined, "for comprehension value");
+      this.toAssignable(loopNode.ival, undefined, "for comprehension value");
+      this.checkLVal(loopNode.ival, undefined, undefined, "for comprehension value");
       // TODO: ?? do something with refShorthandDefaultPos if ?.start ?
 
-      if (this.eat(tt.comma)) loopNode.lidx = this.parseIdentifier();
+      if (this.eat(tt.comma)) loopNode.ikey = this.parseIdentifier();
 
       if (this.eat(tt._in)) {
         loopNode.operator = "in";
