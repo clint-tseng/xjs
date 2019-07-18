@@ -15,6 +15,7 @@ PHILOSOPHIE
   * performance         by, for instance, compiling succinct comprehensions to bare loops
   * consistency         by, for instance, fixing cases where javascript is a mess
 
+
 ENABLED ES PROPOSALS
 ====================
 
@@ -31,6 +32,7 @@ ENABLED ES PROPOSALS
 * :: FUNCTION BIND
 
 * DO EXPRESSIONS
+
 
 IMPLEMENTED
 ===========
@@ -67,7 +69,7 @@ IMPLEMENTED
 
   * INCOMPLETE: affects line numbering.
 
-* ? PREFIX EXISTENCE
+* ? PREFIX EXISTENCE OPERATOR
   sugar: ?a to (a == null)
   sugar: !?a to (a != null)
 
@@ -87,10 +89,17 @@ IMPLEMENTED
 
   * IMPROVE: reset ref count per scope?
 
+
 PROBABLY
 ========
 
 not all of these are good or final ideas.
+
+* is isnt NAMED COMPARISON OPERATORS
+  sugar: is to ===; isnt to !==
+
+* not and or NAMED BOOLEAN OPERATORS
+  are just easier to read
 
 * UNARY/BINARY OPERATORS AS FUNCTIONS
   pairs.map(+)          sugar: bare unary operators compile to two-arg functions
@@ -113,12 +122,6 @@ not all of these are good or final ideas.
 
 * >> COMPOSE
   sugar: f >> g to (x => f(g(x)))
-
-* is isnt NAMED COMPARISON OPERATORS
-  sugar: is to ===; isnt to !==
-
-* not and or NAMED BOOLEAN OPERATORS
-  are just easier to read
 
 
 COMPREHENSIONS
@@ -144,20 +147,14 @@ MAYBE (but then again maybe not)
 * COMMA-OPTIONAL TERMS
   f(x y)                commas in arglists and arrays are optional (also objs if newline/shorthand)
 
+* BACKCALLS?
+  x <= proc(2, 4)       sugar: as in livescript
+
 * ++ CONCATENATOR
   sugar: a ++ b to a.concat(b)
 
 * <+ APPENDOR
   sugar: a <+ b to a.push(...b)
-
-* CONDITIONAL LOOPING
-  for x in xs when x?   just continues unless condition passes
-
-* WHITESPACE-SIGNIFICANCE
-  if / for / while / try
-  are allowed whitespace-significant indentation to signify blocks (curlies optional)
-  and do not require parens
-  single-line blocks are available with curlies
 
 * these are likely usurped by do expressions:
 
@@ -170,6 +167,9 @@ MAYBE (but then again maybe not)
   * TRY EXPRESSIONS
     const x = try danger();       // you only get one expression?
 
-* BACKCALLS?
-  x <= proc(2, 4)       sugar: as in livescript
+* WHITESPACE-SIGNIFICANCE
+  if / for / while / try
+  are allowed whitespace-significant indentation to signify blocks (curlies optional)
+  and do not require parens
+  single-line blocks are available with curlies
 
