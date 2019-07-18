@@ -11,28 +11,37 @@ const rewriteLoop = (path, idx, push) => {
   const node = path.node.loops[idx];
   const isArray = (node.operator === 'in');
 
+  // determine whether we can use node.right as-is or if we should cache it.
+  let preinits = [];
+  let targetIdentifier;
+  if (t.isIdentifier(node.right)) {
+    targetIdentifier = node.right;
+  } else {
+    targetIdentifier = path.scope.generateUidIdentifier('c');
+    preinits.push(t.variableDeclarator(targetIdentifier, node.right));
+  }
+
   // generate our own pre-loop inits that will go up one level after return.
-  const lenIdentifier = path.scope.generateUidIdentifierBasedOnNode(push, 'l');
-  let keysIdentifier; // := Object.keys(node.right);  // only used for objs
-  let preinits;
+  const lenIdentifier = path.scope.generateUidIdentifier('l');
+  let keysIdentifier; // := Object.keys(target);  // only used for objs
   if (isArray) {
-    preinits = [
+    preinits.push(
       t.variableDeclarator(
-        lenIdentifier, t.memberExpression(node.right, t.identifier('length')))
-    ];
+        lenIdentifier, t.memberExpression(targetIdentifier, t.identifier('length')))
+    );
   } else { // is object:
-    keysIdentifier = path.scope.generateUidIdentifierBasedOnNode(push, 'ks');
-    preinits = [
+    keysIdentifier = path.scope.generateUidIdentifier('ks');
+    preinits.push(
       t.variableDeclarator(
         keysIdentifier, t.callExpression(
           t.memberExpression(t.identifier('Object'), t.identifier('keys')),
-          [ node.right ]
+          [ targetIdentifier ]
         )
       ),
       t.variableDeclarator(
         lenIdentifier, t.memberExpression(keysIdentifier, t.identifier('length'))
       ),
-    ];
+    );
   }
 
   // we have all our aboveloop stuff set up so now we focus on inner loop concerns,
@@ -42,15 +51,15 @@ const rewriteLoop = (path, idx, push) => {
   let loopinits;
   if (isArray) {                        // v, k in []
     indexIdentifier = node.ikey
-      || path.scope.generateUidIdentifierBasedOnNode(push, 'i');
+      || path.scope.generateUidIdentifier('i');
     loopinits = [
       t.variableDeclarator( // v = arr[k]
         node.ival,
-        t.memberExpression(node.right, indexIdentifier, true),
+        t.memberExpression(targetIdentifier, indexIdentifier, true),
       ),
     ];
   } else {                              // is obj
-    indexIdentifier = path.scope.generateUidIdentifierBasedOnNode(push, 'i');
+    indexIdentifier = path.scope.generateUidIdentifier('i');
 
     if (isUnderscore(node.ival)) {      // _, k of {}
       if ((node.ikey == null) || isUnderscore(node.ikey))
@@ -63,7 +72,7 @@ const rewriteLoop = (path, idx, push) => {
     } else if ((node.ikey == null) || isUnderscore(node.ikey)) {
       loopinits = [                     // v of {}
         t.variableDeclarator( // v = obj[ks[k]]
-          node.ival, t.memberExpression(node.right,
+          node.ival, t.memberExpression(targetIdentifier,
             t.memberExpression(keysIdentifier, indexIdentifier, true), true)),
       ];
     } else {                            // k, v of {}
@@ -71,7 +80,7 @@ const rewriteLoop = (path, idx, push) => {
         t.variableDeclarator( // k = ks[i]
           node.ikey, t.memberExpression(keysIdentifier, indexIdentifier, true)),
         t.variableDeclarator( // v = obj[k]
-          node.ival, t.memberExpression(node.right, node.ikey, true)),
+          node.ival, t.memberExpression(targetIdentifier, node.ikey, true)),
       ];
     }
   }
@@ -116,7 +125,7 @@ export default declare(api => {
             ? node.body[0]
             : t.SequenceExpression(node.body);
 
-          const resultIdentifier = path.scope.generateUidIdentifierBasedOnNode(calc, 'r');
+          const resultIdentifier = path.scope.generateUidIdentifier('r');
 
           const push = t.expressionStatement(t.callExpression(
             t.memberExpression(resultIdentifier, t.identifier('push')),
