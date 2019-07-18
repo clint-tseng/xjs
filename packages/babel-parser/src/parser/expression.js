@@ -1019,7 +1019,7 @@ export default class ExpressionParser extends LValParser {
         this.state.inFSharpPipelineDirectBody = false;
         node = this.startNode();
         this.next();
-        node.elements = this.parseExprList(
+        const elts = this.parseExprList(
           tt.bracketR,
           true,
           refShorthandDefaultPos,
@@ -1030,10 +1030,15 @@ export default class ExpressionParser extends LValParser {
           // In this case, we don't have to call toReferencedList. We will
           // call it, if needed, when we are sure that it is a parenthesized
           // expression by calling toReferencedListDeep.
-          this.toReferencedList(node.elements);
+          this.toReferencedList(elts);
         }
         this.state.inFSharpPipelineDirectBody = oldInFSharpPipelineDirectBody;
-        return this.finishNode(node, "ArrayExpression");
+        if (this.eat(tt._for)) {
+          return this.parseArrayComprehension(node, elts, refShorthandDefaultPos);
+        } else {
+          node.elements = elts;
+          return this.finishNode(node, "ArrayExpression");
+        }
       }
       case tt.braceL: {
         const oldInFSharpPipelineDirectBody = this.state
@@ -2059,6 +2064,8 @@ export default class ExpressionParser extends LValParser {
     while (!this.eat(close)) {
       if (first) {
         first = false;
+      } else if (this.match(tt._for)) {
+        return elts;
       } else {
         this.expect(tt.comma);
         if (this.eat(close)) break;
@@ -2103,6 +2110,51 @@ export default class ExpressionParser extends LValParser {
       );
     }
     return elt;
+  }
+
+  parseArrayComprehension(
+    node: N.Expression,
+    body: N.Expression[],
+    refShorthandDefaultPos?: ?Pos,
+  ): ?N.ArrayComprehensionExpression {
+    node.body = body;
+    node.loops = [];
+
+    while (true) {
+      const loopNode = this.startNode();
+      node.loops.push(loopNode);
+
+      loopNode.lval = this.parseMaybeConditional(
+        true,
+        refShorthandDefaultPos,
+      );
+      this.toAssignable(loopNode.lval, undefined, "for comprehension value");
+      this.checkLVal(loopNode.lval, undefined, undefined, "for comprehension value");
+      // TODO: ?? do something with refShorthandDefaultPos if ?.start ?
+
+      if (this.eat(tt.comma)) loopNode.lidx = this.parseIdentifier();
+
+      if (this.eat(tt._in)) {
+        loopNode.operator = "in";
+      } else if (this.isContextual("of")) {
+        this.next();
+        loopNode.operator = "of";
+      }
+
+      loopNode.right = this.parseMaybeAssign(true, refShorthandDefaultPos);
+
+      if (this.eat(tt._if))
+        loopNode.test = this.parseMaybeAssign(true, refShorthandDefaultPos);
+
+      this.finishNode(loopNode, "ComprehensionLoopExpression");
+
+      if (this.eat(tt.bracketR))
+        break;
+      else
+        this.expect(tt._for);
+    }
+
+    return this.finishNode(node, "ArrayComprehensionExpression");
   }
 
   // Parse the next token as an identifier. If `liberal` is true (used

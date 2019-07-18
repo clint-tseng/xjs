@@ -12,6 +12,7 @@ import declarationExistential from "@xjs/plugin-transform-declaration-existentia
 import existence from "@xjs/plugin-transform-existence";
 import arrow from "@xjs/plugin-transform-arrow";
 import underscore from "@xjs/plugin-transform-underscore-parameters";
+import comprehension from "@xjs/plugin-transform-comprehension";
 
 export default declare(
   (api) => {
@@ -32,6 +33,7 @@ export default declare(
       [ existence ],
       [ arrow ],
       [ underscore ],
+      [ comprehension ],
     ] }] };
   },
 );

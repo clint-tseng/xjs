@@ -27,6 +27,45 @@ defineType("AccessFunctionExpression", {
   //aliases: ["Expression"],
 });
 
+defineType("ArrayComprehensionExpression", {
+  visitor: ["body", "loops"],
+  fields: {
+    body: {
+      validate: assertNodeType("Expression"),
+      optional: true,
+    },
+    loops: {
+      validate: chain(
+        assertValueType("array"),
+        assertEach(assertNodeType("ComprehensionLoopExpression")),
+      ),
+    }
+  },
+});
+
+defineType("ComprehensionLoopExpression", {
+  visitor: ["lval", "lidx", "right"],
+  fields: {
+    lval: {
+      validate: assertNodeType("LVal"),
+    },
+    lidx: {
+      validate: assertNodeType("Identifier"),
+      optional: true,
+    },
+    operator: {
+      validate: assertValueType("string"),
+    },
+    right: {
+      validate: assertNodeType("Expression"),
+    },
+    test: {
+      validate: assertNodeType("Expression"),
+      optional: true,
+    },
+  },
+});
+
 defineType("ArrayExpression", {
   fields: {
     elements: {
