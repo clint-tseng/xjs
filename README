@@ -88,7 +88,6 @@ IMPLEMENTED
 
   [ do { … } for x in xs ]                use do if you need a block
 
-  * BUG: array index nonstable in callbacks
   * IMPROVE: var naming scope
   * INCOMPLETE: affects line numbering.
 

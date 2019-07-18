@@ -3,6 +3,31 @@ import { types as t } from "@babel/core";
 
 const isUnderscore = (node) => t.isIdentifier(node) && (node.name === '_');
 
+const detectClosures = (path, name) => {
+  let found = false;
+
+  const types = [
+    'ArrowFunctionExpression',
+    'FunctionExpression',
+    'ObjectMethod'
+  ];
+  path.traverse({
+    [types.join('|')](ipath) {
+      ipath.traverse({
+        Identifier(iipath) {
+          if (iipath.node.name === name) {
+            found = true;
+            iipath.stop();
+            ipath.stop();
+          }
+        }
+      });
+    },
+  });
+
+  return found;
+};
+
 // called from the end to the front so the call recursion approaches the
 // innermost loop and the actual push.
 //
@@ -50,14 +75,25 @@ const rewriteLoop = (path, idx, push) => {
   let indexIdentifier;
   let loopinits;
   if (isArray) {                        // v, k in []
-    indexIdentifier = node.ikey
-      || path.scope.generateUidIdentifier('i');
-    loopinits = [
+    loopinits = [];
+
+    // here we have to take some care; we would like to just use the indexing var
+    // we loop with as the var we bind the push expression to. but if the push
+    // expression uses it as a part of any closure we need to block-scope it
+    // locally to preserve its constancy.
+    if (t.isIdentifier(node.ikey) && detectClosures(path, node.ikey.name)) {
+      indexIdentifier = path.scope.generateUidIdentifier('i');
+      loopinits.push(t.variableDeclarator(node.ikey, indexIdentifier)); // k = i
+    } else {
+      indexIdentifier = node.ikey || path.scope.generateUidIdentifier('i');
+    }
+
+    loopinits.push(
       t.variableDeclarator( // v = arr[k]
         node.ival,
         t.memberExpression(targetIdentifier, indexIdentifier, true),
       ),
-    ];
+    );
   } else {                              // is obj
     indexIdentifier = path.scope.generateUidIdentifier('i');
 
