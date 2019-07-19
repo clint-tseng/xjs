@@ -1,0 +1,13 @@
+
+const f = (objs) => {
+  objs.map(.x);
+  objs.map(.x + 1);
+  objs.map(.x().y(.z));
+  g(x, .length + 1, y);
+  (.map(g))(objs);
+  (.map(.length + 1))(objs);
+  objs.map(.length |> g);
+};
+
+const g = .map(.x);
+

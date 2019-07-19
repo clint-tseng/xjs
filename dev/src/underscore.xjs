@@ -1,0 +1,13 @@
+const f = (_, _, x) => x;
+const g = | _, _, x => x;
+
+function h(_, _, x) { return x; };
+
+const obj = {
+  i(_, _, x) {
+    return x;
+  }
+}
+
+const j = (a = ((_, b) => _ + b), _, c) => a + c;
+

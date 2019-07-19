@@ -1,0 +1,60 @@
+const xs = [ 1, 2, 3 ];
+const ys = [ { xs: [ 1, 2, 3 ] }, { xs: [ 4, 5, 6 ] }, { xs: [ 7, 8, 9 ] } ];
+const z = { a: [ 1, 2 ], b: [ 3, 4 ], c: [ 5, 6 ] };
+
+const a = [ x * 2 for x in xs ];
+console.log('a', a);
+
+const b = [ `${idx}: ${x}` for x, idx in xs ];
+console.log('b', b);
+
+const c = [ x for x in xs if x > 1 ];
+console.log('c', c);
+
+const d1 = [ x - 1 for x in y.xs for y in ys ];
+console.log('d1', d1);
+
+const d2 = [ x - 1 for x in y.xs if x % 2 for y in ys ];
+console.log('d2', d2);
+
+const e1 = [ [ x - 1 for x in y.xs ] for y in ys ];
+console.log('e1', e1);
+
+const e2 = [ [ x - 1 for x in xs ] for { xs } in ys ];
+console.log('e2', e2);
+
+const f1 = [ v[0] + v[1] for v of z ];
+console.log('f1', f1);
+
+const f2 = [ k for _, k of z ];
+console.log('f2', f2);
+
+const f3 = [ k + v for v, k of z ];
+console.log('f3', f3);
+
+const g1 = { [v[0]]: k for v, k of z };
+console.log('g1', g1);
+
+const g2 = { k: k for _, k of z };
+console.log('g2', g2);
+
+const g3 = { xyz: x for x of z };
+console.log('g3', g3);
+
+const g4 = { [x]: x for x in xs }; // TODO: rm brackets
+console.log('g4', g4);
+
+const h = [ do { x } for x in xs ];
+console.log('h', h);
+
+const i = [ xs[0] for { xs } in ys ];
+console.log('i', i);
+
+const j = [ x * 2 for x in [ x * 2 for x in xs ] ];
+console.log('j', j);
+
+const noop = -> {};
+const k1 = [ -> console.log(i, x) for x, i in xs ];
+const k2 = [ noop(i, x) for x, i in xs ];
+const k3 = [ { method() { return i; } } for x, i in xs ];
+

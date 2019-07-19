@@ -1,0 +1,23 @@
+
+const f = async (obj) => {
+  guard const a = obj.x;
+  guard const b = obj.x, c = obj.y;
+  guard const { e, f } = obj;
+  //guard const { e, ...es } = obj;             // TODO: no worky
+  guard obj;                                    // TODO: works but extra ; artifact
+  guard await x;
+  guard const x = obj.x else return 42;
+  guard const y = obj.x else panic();
+  guard const z = obj.x else throw new Error('no x!');
+
+  for (const obj of objs) {
+    guard const { m } = obj else continue;
+    guard const { n } = obj else break;
+  }
+
+  return x * 16;
+};
+
+23 |> f |> console.log;
+//{ x: 2 } |> f |> console.log;
+

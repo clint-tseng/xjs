@@ -1,0 +1,1 @@
+../compiler/packages/babel-cli/bin/babel.js

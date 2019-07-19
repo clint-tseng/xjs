@@ -1,0 +1,8 @@
+{
+  "name": "xjs-test",
+  "version": "0.1.0",
+  "private": true,
+  "packages": {
+    "@xjs/preset": "^7.0.0"
+  }
+}
