@@ -716,7 +716,7 @@ export default class StatementParser extends ExpressionParser {
     this.next();
     this.parseVar(node, false, kind);
 
-    if (isGuard && this.lookahead().type === tt.else) { /* do nothing */ }
+    if (isGuard && this.match(tt._else)) { /* do nothing */ }
     else if (this.match(tt.braceL)) {
       node.consequent = this.parseBlock();
       this.semicolon();
