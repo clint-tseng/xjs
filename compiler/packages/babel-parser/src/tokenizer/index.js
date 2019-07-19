@@ -549,7 +549,7 @@ export default class Tokenizer extends LocationParser {
 
     if ((code === charCodes.dash) && (next === charCodes.greaterThan)) {
       this.state.pos += 2;
-      this.finishToken(tt.singleArrow);
+      this.finishToken(tt.arrow, "->");
       return;
     }
 
@@ -616,7 +616,7 @@ export default class Tokenizer extends LocationParser {
     if (code === charCodes.equalsTo && next === charCodes.greaterThan) {
       // '=>'
       this.state.pos += 2;
-      this.finishToken(tt.arrow);
+      this.finishToken(tt.arrow, "=>");
       return;
     }
     this.finishOp(code === charCodes.equalsTo ? tt.eq : tt.bang, 1);

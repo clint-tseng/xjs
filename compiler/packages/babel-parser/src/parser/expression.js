@@ -826,15 +826,15 @@ export default class ExpressionParser extends LValParser {
   }
 
   shouldParseAsyncArrow(): boolean {
-    return (this.match(tt.arrow) || this.match(tt.singleArrow)) && !this.canInsertSemicolon();
+    return this.match(tt.arrow) && !this.canInsertSemicolon();
   }
 
   parseAsyncArrowFromCallExpression(
     node: N.ArrowFunctionExpression,
     call: N.CallExpression,
   ): N.ArrowFunctionExpression {
-    node.operator = this.state.type.label;
-    this.eat(tt.singleArrow) || this.expect(tt.arrow);
+    node.operator = this.state.value;
+    this.expect(tt.arrow);
     this.parseArrowExpression(node, call.arguments, true);
     return node;
   }
@@ -939,8 +939,8 @@ export default class ExpressionParser extends LValParser {
           !this.canInsertSemicolon()
         ) {
           const params = [this.parseIdentifier()];
-          node.operator = this.state.type.label;
-          this.eat(tt.singleArrow) || this.expect(tt.arrow);
+          node.operator = this.state.value;
+          this.expect(tt.arrow);
           // let foo = async bar => {};
           this.parseArrowExpression(node, params, true);
           return node;
@@ -948,11 +948,11 @@ export default class ExpressionParser extends LValParser {
 
         if (
           canBeArrow &&
-          (this.match(tt.arrow) || this.match(tt.singleArrow)) &&
+          this.match(tt.arrow) &&
           !this.canInsertSemicolon() &&
           !this.state.inPipeParameters
         ) {
-          node.operator = this.state.type.label;
+          node.operator = this.state.value;
           this.next();
           this.parseArrowExpression(node, [id], false);
           return node;
@@ -961,10 +961,9 @@ export default class ExpressionParser extends LValParser {
         return id;
       }
 
-      case tt.arrow:
-      case tt.singleArrow: {
+      case tt.arrow: {
         node = this.startNode();
-        node.operator = this.state.type.label;
+        node.operator = this.state.value;
         this.next();
         this.parseArrowExpression(node, [], false);
         return node;
@@ -1421,8 +1420,9 @@ export default class ExpressionParser extends LValParser {
   }
 
   parseArrow(node: N.ArrowFunctionExpression): ?N.ArrowFunctionExpression {
-    if (this.eat(tt.arrow) || this.eat(tt.singleArrow)) {
-      node.operator = this.state.type.label;
+    if (this.match(tt.arrow)) {
+      node.operator = this.state.value;
+      this.eat(tt.arrow);
       return node;
     }
   }
@@ -2377,7 +2377,7 @@ export default class ExpressionParser extends LValParser {
     pipelineStyle: N.PipelineStyle,
     startPos: number,
   ): void {
-    if (this.match(tt.arrow) || this.match(tt.singleArrow)) {
+    if (this.match(tt.arrow)) {
       // If the following token is invalidly `=>`, then throw a human-friendly error
       // instead of something like 'Unexpected token, expected ";"'.
       throw this.raise(

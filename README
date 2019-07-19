@@ -119,12 +119,12 @@ IMPLEMENTED
   | x, y => x + y       the pipe allows clean multi-arg separation without parens
   | x, y -> proc(x, y)  multi-parameter
 
-  * INCOMPLETE: pipe and single arrow do not yet mix.
-
 * NON-RETURNING LAMBDAS
   very minor improvement. (it doesn't =equal= the value, so ->)
 
   x -> proc(x)          sugar: x => { proc(x); }
+
+  * INCOMPLETE: affects line numbering.
 
 * THROWAWAY UNDERSCORES
   because i don't care.
