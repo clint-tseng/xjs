@@ -84,7 +84,9 @@ IMPLEMENTED
   [ v for v of obj ]                      object-to-array comprehension
   { k: v for _, k of obj }                object-to-object comprehension
                                           _ terms are ignored
-  { k: x for x in xs }                    array-to-object comprehension
+  { [k + 1]: x for x in xs }              array-to-object comprehension
+                                          use brackets around expressions
+  { unknown: x for x in xs }              implied literal, though why would you do this?
 
   [ do { … } for x in xs ]                use do if you need a block
 

@@ -13,16 +13,9 @@ const detectClosures = (path, name) => {
   ];
   path.traverse({
     [types.join('|')](ipath) {
-      ipath.traverse({
-        Identifier(iipath) {
-          if (iipath.node.name === name) {
-            found = true;
-            iipath.stop();
-            ipath.stop();
-          }
-        }
-      });
-    },
+      found = found || ipath.scope.hasReference(name);
+      if (found) ipath.stop();
+    }
   });
 
   return found;
@@ -73,10 +66,8 @@ const rewriteLoop = (path, idx, push) => {
   // where we will generate the bindings that are used either by the inner loop
   // or by the final calc/push expr.
   let indexIdentifier;
-  let loopinits;
+  let loopinits = [];
   if (isArray) {                        // v, k in []
-    loopinits = [];
-
     // here we have to take some care; we would like to just use the indexing var
     // we loop with as the var we bind the push expression to. but if the push
     // expression uses it as a part of any closure we need to block-scope it
@@ -101,23 +92,23 @@ const rewriteLoop = (path, idx, push) => {
       if ((node.ikey == null) || isUnderscore(node.ikey))
         this.raise('invalid for parameters');
 
-      loopinits = [
+      loopinits.push(
         t.variableDeclarator( // k = ks[i]
           node.ikey, t.memberExpression(keysIdentifier, indexIdentifier, true)),
-      ];
+      );
     } else if ((node.ikey == null) || isUnderscore(node.ikey)) {
-      loopinits = [                     // v of {}
+      loopinits.push(                     // v of {}
         t.variableDeclarator( // v = obj[ks[k]]
           node.ival, t.memberExpression(targetIdentifier,
             t.memberExpression(keysIdentifier, indexIdentifier, true), true)),
-      ];
+      );
     } else {                            // k, v of {}
-      loopinits = [
+      loopinits.push(
         t.variableDeclarator( // k = ks[i]
           node.ikey, t.memberExpression(keysIdentifier, indexIdentifier, true)),
         t.variableDeclarator( // v = obj[k]
           node.ival, t.memberExpression(targetIdentifier, node.ikey, true)),
-      ];
+      );
     }
   }
 
@@ -147,6 +138,26 @@ const rewriteLoop = (path, idx, push) => {
   ];
 };
 
+const rewriteComprehension = (path, init, pusher) => {
+  const { node } = path;
+  const resultIdentifier = path.scope.generateUidIdentifier('r');
+  const push = pusher(resultIdentifier);
+  const [ decl, loop ] = rewriteLoop(path, path.node.loops.length - 1, push);
+  path.replaceWith(t.callExpression(
+    t.arrowFunctionExpression(
+      [],
+      t.blockStatement([
+        t.variableDeclaration('const', [
+          t.variableDeclarator(resultIdentifier, init),
+        ].concat(decl)),
+        loop,
+        t.returnStatement(resultIdentifier),
+      ]),
+    ),
+    [],
+  ));
+};
+
 export default declare(api => {
   api.assertVersion(7);
 
@@ -157,32 +168,23 @@ export default declare(api => {
       ArrayComprehensionExpression: {
         exit(path) {
           const { node } = path;
-          const calc = (node.body.length === 1)
-            ? node.body[0]
-            : t.SequenceExpression(node.body);
-
-          const resultIdentifier = path.scope.generateUidIdentifier('r');
-
-          const push = t.expressionStatement(t.callExpression(
+          rewriteComprehension(path, t.arrayExpression(), (resultIdentifier) =>
+            t.expressionStatement(t.callExpression(
             t.memberExpression(resultIdentifier, t.identifier('push')),
-            [ calc ]
-          ));
+              [ (node.body.length === 1) ? node.body[0] : t.SequenceExpression(node.body) ]
+            )));
+        },
+      },
 
-          const [ decl, loop ] = rewriteLoop(path, path.node.loops.length - 1, push);
-
-          path.replaceWith(t.callExpression(
-            t.arrowFunctionExpression(
-              [],
-              t.blockStatement([
-                t.variableDeclaration('const', [
-                  t.variableDeclarator(resultIdentifier, t.arrayExpression()),
-                ].concat(decl)),
-                loop,
-                t.returnStatement(resultIdentifier),
-              ]),
-            ),
-            [],
-          ));
+      ObjectComprehensionExpression: {
+        exit(path) {
+          const { node } = path;
+          rewriteComprehension(path, t.objectExpression([]), (resultIdentifier) =>
+            t.expressionStatement(t.assignmentExpression(
+              '=',
+              t.memberExpression(resultIdentifier, node.body.key, // r.k / r[k]
+                !!node.body.computed || path.scope.hasReference(node.body.key.name)),
+              node.body.value)));
         },
       },
     },

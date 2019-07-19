@@ -43,6 +43,22 @@ defineType("ArrayComprehensionExpression", {
   },
 });
 
+defineType("ObjectComprehensionExpression", {
+  visitor: ["body", "loops"],
+  fields: {
+    body: {
+      validate: assertNodeType("Expression"),
+      optional: true,
+    },
+    loops: {
+      validate: chain(
+        assertValueType("array"),
+        assertEach(assertNodeType("ComprehensionLoopExpression")),
+      ),
+    }
+  },
+});
+
 defineType("ComprehensionLoopExpression", {
   visitor: ["ival", "ikey", "right"],
   fields: {

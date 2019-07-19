@@ -1034,7 +1034,13 @@ export default class ExpressionParser extends LValParser {
         }
         this.state.inFSharpPipelineDirectBody = oldInFSharpPipelineDirectBody;
         if (this.eat(tt._for)) {
-          return this.parseArrayComprehension(node, elts, refShorthandDefaultPos);
+          const cnode = this.parseComprehension(
+            node,
+            elts,
+            tt.bracketR,
+            refShorthandDefaultPos,
+          );
+          return this.finishNode(cnode, "ArrayComprehensionExpression");
         } else {
           node.elements = elts;
           return this.finishNode(node, "ArrayExpression");
@@ -1541,12 +1547,23 @@ export default class ExpressionParser extends LValParser {
     let first = true;
     const node = this.startNode();
 
-    node.properties = [];
+    const properties = [];
     this.next();
 
     while (!this.eat(tt.braceR)) {
       if (first) {
         first = false;
+      } else if (this.eat(tt._for)) {
+        if (properties.length > 1)
+          this.raise("too many assignments for object comprehension");
+
+        this.parseComprehension(
+          node,
+          properties[0],
+          tt.braceR,
+          refShorthandDefaultPos,
+        );
+        return this.finishNode(node, "ObjectComprehensionExpression");
       } else {
         this.expect(tt.comma);
         if (this.eat(tt.braceR)) break;
@@ -1561,9 +1578,10 @@ export default class ExpressionParser extends LValParser {
         this.addExtra(prop, "shorthand", true);
       }
 
-      node.properties.push(prop);
+      properties.push(prop);
     }
 
+    node.properties = properties;
     return this.finishNode(
       node,
       isPattern ? "ObjectPattern" : "ObjectExpression",
@@ -2112,9 +2130,10 @@ export default class ExpressionParser extends LValParser {
     return elt;
   }
 
-  parseArrayComprehension(
+  parseComprehension(
     node: N.Expression,
     body: N.Expression[],
+    close: TokenType,
     refShorthandDefaultPos?: ?Pos,
   ): ?N.ArrayComprehensionExpression {
     node.body = body;
@@ -2148,13 +2167,13 @@ export default class ExpressionParser extends LValParser {
 
       this.finishNode(loopNode, "ComprehensionLoopExpression");
 
-      if (this.eat(tt.bracketR))
+      if (this.eat(close))
         break;
       else
         this.expect(tt._for);
     }
 
-    return this.finishNode(node, "ArrayComprehensionExpression");
+    return node;
   }
 
   // Parse the next token as an identifier. If `liberal` is true (used
