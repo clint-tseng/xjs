@@ -330,10 +330,29 @@ export default class ExpressionParser extends LValParser {
     minPrec: number,
     noIn: ?boolean,
   ): N.Expression {
-    const prec = this.state.type.binop;
+    // xjs hack: replace named binops iff we find them in operator positions.
+    let op = this.state.type;
+    let value = this.state.value;
+    if ((op.binop == null) && this.match(tt.name)) {
+      if (this.state.value === 'is') {
+        op = tt.equality;
+        value = '===';
+      } else if (this.state.value === 'isnt') {
+        op = tt.equality;
+        value = '!==';
+      } else if (this.state.value === 'and') {
+        op = tt.logicalAND;
+        value = '&&';
+      } else if (this.state.value === 'or') {
+        op = tt.logicalOR;
+        value = '||';
+      }
+    }
+
+    const prec = op.binop;
     if (prec != null && (!noIn || !this.match(tt._in))) {
       if (prec > minPrec) {
-        const operator = this.state.value;
+        const operator = value;
         if (operator === "|>" && this.state.inFSharpPipelineDirectBody) {
           return left;
         }
@@ -351,8 +370,6 @@ export default class ExpressionParser extends LValParser {
             "Illegal expression. Wrap left hand side or entire exponentiation in parentheses.",
           );
         }
-
-        const op = this.state.type;
 
         if (op === tt.pipeline) {
           this.expectPlugin("pipelineOperator");

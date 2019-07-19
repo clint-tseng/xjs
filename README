@@ -127,6 +127,9 @@ IMPLEMENTED
 
   * INCOMPLETE: affects line numbering.
 
+* is isnt and or NAMED OPERATORS
+  sugar: === !== && ||
+
 * THROWAWAY UNDERSCORES
   because i don't care.
 
@@ -145,9 +148,6 @@ PROBABLY
 ========
 
 planned. not final.
-
-* is isnt not and or NAMED OPERATORS
-  sugar: === !== ! && ||
 
 * UNARY/BINARY OPERATORS AS FUNCTIONS
   pairs.map(+)          sugar: bare unary operators compile to two-arg functions

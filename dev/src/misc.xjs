@@ -1,3 +1,8 @@
 class A;
 class B extends A;
 
+3 is 4;
+5 isnt 6;
+true and false;
+false or true;
+
