@@ -22,6 +22,57 @@ export function isAccessFunctionExpression(
 
   return false;
 }
+export function isArrayComprehensionExpression(
+  node: ?Object,
+  opts?: Object,
+): boolean {
+  if (!node) return false;
+
+  const nodeType = node.type;
+  if (nodeType === "ArrayComprehensionExpression") {
+    if (typeof opts === "undefined") {
+      return true;
+    } else {
+      return shallowEqual(node, opts);
+    }
+  }
+
+  return false;
+}
+export function isObjectComprehensionExpression(
+  node: ?Object,
+  opts?: Object,
+): boolean {
+  if (!node) return false;
+
+  const nodeType = node.type;
+  if (nodeType === "ObjectComprehensionExpression") {
+    if (typeof opts === "undefined") {
+      return true;
+    } else {
+      return shallowEqual(node, opts);
+    }
+  }
+
+  return false;
+}
+export function isComprehensionLoopExpression(
+  node: ?Object,
+  opts?: Object,
+): boolean {
+  if (!node) return false;
+
+  const nodeType = node.type;
+  if (nodeType === "ComprehensionLoopExpression") {
+    if (typeof opts === "undefined") {
+      return true;
+    } else {
+      return shallowEqual(node, opts);
+    }
+  }
+
+  return false;
+}
 export function isArrayExpression(node: ?Object, opts?: Object): boolean {
   if (!node) return false;
 

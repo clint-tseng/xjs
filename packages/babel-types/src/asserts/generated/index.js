@@ -21,6 +21,24 @@ export function assertAccessFunctionExpression(
 ): void {
   assert("AccessFunctionExpression", node, opts);
 }
+export function assertArrayComprehensionExpression(
+  node: Object,
+  opts?: Object = {},
+): void {
+  assert("ArrayComprehensionExpression", node, opts);
+}
+export function assertObjectComprehensionExpression(
+  node: Object,
+  opts?: Object = {},
+): void {
+  assert("ObjectComprehensionExpression", node, opts);
+}
+export function assertComprehensionLoopExpression(
+  node: Object,
+  opts?: Object = {},
+): void {
+  assert("ComprehensionLoopExpression", node, opts);
+}
 export function assertArrayExpression(node: Object, opts?: Object = {}): void {
   assert("ArrayExpression", node, opts);
 }

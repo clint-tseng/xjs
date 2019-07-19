@@ -9,6 +9,18 @@ export function AccessFunctionExpression(...args: Array<any>): Object {
   return builder("AccessFunctionExpression", ...args);
 }
 export { AccessFunctionExpression as accessFunctionExpression };
+export function ArrayComprehensionExpression(...args: Array<any>): Object {
+  return builder("ArrayComprehensionExpression", ...args);
+}
+export { ArrayComprehensionExpression as arrayComprehensionExpression };
+export function ObjectComprehensionExpression(...args: Array<any>): Object {
+  return builder("ObjectComprehensionExpression", ...args);
+}
+export { ObjectComprehensionExpression as objectComprehensionExpression };
+export function ComprehensionLoopExpression(...args: Array<any>): Object {
+  return builder("ComprehensionLoopExpression", ...args);
+}
+export { ComprehensionLoopExpression as comprehensionLoopExpression };
 export function ArrayExpression(...args: Array<any>): Object {
   return builder("ArrayExpression", ...args);
 }
