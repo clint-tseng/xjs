@@ -1,3 +1,9 @@
+
+
+\\//  ||  //\
+//\\ =// \//     a dumb toy js variant for my own use only.
+
+
 PHILOSOPHIE
 ===========
 
@@ -5,7 +11,7 @@ PHILOSOPHIE
   * be obvious
   * remain largely readable to those only familiar with the base language
   * transform inline (no change in line numbering)
-  * never require additional definition (corollary to previous)
+  * never require additional procedure definition (corollary to previous)
   * be commonly useful
 
 * changes to base javascript must in every case
@@ -20,12 +26,10 @@ ENABLED ES PROPOSALS
 ====================
 
 * |> FORWARD PIPE (using f# es proposal)
-  sugar: x |> a |> b to b(a(x))
 
   * INCOMPLETE: affects line numbering.
 
 * ?. OPTIONAL CHAINING (using loose = true)
-  sugar: a?.b to (a == null) ? void 0 : a.b
 
 * ?? NULLISH COALESCE (using loose = true)
 
@@ -37,39 +41,8 @@ ENABLED ES PROPOSALS
 IMPLEMENTED
 ===========
 
-* GUARD CONTROL FLOW
-  guard const x = maybeGet();
-  guard const y = maybeGet() else throw new Error('no y!');
-  guard const z = getZ(), y = getY(), x = getX();
-  guard a;
-  guard whatever() else panic();
-
-  the else-less case return;s
-  in the else case the else block is run.
-  given break; continue; return; or throw; in else no further transformation is performed.
-    otherwise, the else block is implicitly terminated with return;
-
-  * BUG: spread destructuring does not work.
-  * BUG: guard a; outputs an extra ; artifact.
-  * IMPROVE: allow use of guard as binding name.
-  * INCOMPLETE: affects line numbering.
-
-* ACCESS AS FUNCTION
-  xs.map(.length)       sugar: dangling accessors compile to one-arg functions
-  xs.map(.length - 1)   within paren, allow subsequent operators
-  xs.map(.get('subarray').map(.length))
-  const f = .map(.y)    sugar: const f = e => e.map(d => d.y)
-  xs.map(.length |> f)  sugar: xs.map(x => f(x.length))
-
-  * INCOMPLETE: affects line numbering.
-
-* DECLARATION EXISTENTIAL (attempt to replicate the insanely nice if-let from swift)
-  const x = getX() { something(x); }
-  let y = getY() { something(y); }
-
-  * INCOMPLETE: affects line numbering.
-
 * COMPREHENSIONS
+  implemented with bare for loops for perf.
 
   [ x * 2 for x in xs ]                   yields a value-returning comprehension
   [ `${idx}: ${x}` for x, idx in xs ]     second-arg key
@@ -90,30 +63,79 @@ IMPLEMENTED
 
   [ do { … } for x in xs ]                use do if you need a block
 
-  * IMPROVE: var naming scope
+  * IMPROVE: messy var naming scope
+  * INCOMPLETE: affects line numbering.
+
+* ACCESS AS FUNCTION
+  copied (improved?) from livescript.
+
+  xs.map(.length)       sugar: dangling accessors compile to one-arg functions
+  xs.map(.length - 1)   within paren, allow subsequent operators
+  xs.map(.get('subarray').map(.length))
+  const f = .map(.y)    sugar: const f = e => e.map(d => d.y)
+  xs.map(.length |> f)  sugar: xs.map(x => f(x.length))
+
+  * INCOMPLETE: affects line numbering.
+
+* GUARD STATEMENT
+  copied from swift, ish.
+
+  guard const x = maybeGet();
+  guard const y = maybeGet() else throw new Error('no y!');
+  guard const z = getZ(), y = getY(), x = getX();
+  guard a;
+  guard whatever() else panic();
+
+  the else-less case return;s
+  in the else case the else block is run.
+  given break; continue; return; or throw; in else no further transformation is performed.
+    otherwise, the else block is implicitly terminated with return;
+
+  * BUG: spread destructuring does not work.
+  * BUG: guard a; outputs an extra ; artifact.
+  * IMPROVE: allow use of guard as binding name.
+  * INCOMPLETE: affects line numbering.
+
+* DECLARATION EXISTENTIAL
+  badly copied from swift's if let due to scoping problems.
+
+  const x = getX() { something(x); }
+  let y = getY() { something(y); }
+
+  * CONSIDER: use tempvar to solve scoping and get true if const?
   * INCOMPLETE: affects line numbering.
 
 * ? PREFIX EXISTENCE OPERATOR
+  because prefix was easier to implement.
+
   sugar: ?a to (a == null)
   sugar: !?a to (a != null)
 
 * LAMBDA SIGNATURES
+  very minor improvements.
+
   => 42                 no need for ()
   x => x * 2            like vanilla
   | x, y => x + y       the pipe allows clean multi-arg separation without parens
   | x, y -> proc(x, y)  multi-parameter
 
-  * BUG: pipe and single arrow do not yet mix.
+  * INCOMPLETE: pipe and single arrow do not yet mix.
 
-* NON-RETURNING LAMBDAS (it doesn't =equal= the value, so ->)
-  sugar: x -> proc(x) to x => { proc(x); }
+* NON-RETURNING LAMBDAS
+  very minor improvement. (it doesn't =equal= the value, so ->)
 
-* UNDERSCORE INSIGNIFICANCE
+  x -> proc(x)          sugar: x => { proc(x); }
+
+* THROWAWAY UNDERSCORES
+  because i don't care.
+
   f(| _ _ x => x)       sugar: _ terms are ignored in arglists
 
-  * IMPROVE: reset ref count per scope?
+  * IMPROVE: messy var naming scope.
 
 * OPTIONAL CLASSBODY
+  because why.
+
   class x;              sugar: class x {}
   class x extends y;    sugar: class x extends y {}
 
@@ -121,13 +143,10 @@ IMPLEMENTED
 PROBABLY
 ========
 
-not all of these are good or final ideas.
+planned. not final.
 
-* is isnt NAMED COMPARISON OPERATORS
-  sugar: is to ===; isnt to !==
-
-* not and or NAMED BOOLEAN OPERATORS
-  are just easier to read
+* is isnt not and or NAMED OPERATORS
+  sugar: === !== ! && ||
 
 * UNARY/BINARY OPERATORS AS FUNCTIONS
   pairs.map(+)          sugar: bare unary operators compile to two-arg functions
@@ -138,6 +157,11 @@ not all of these are good or final ideas.
   const f = inline x => x * 72;
                         probably too difficult to implement in reality?
 
+MAYBE
+=====
+
+these would be "probably" but they're just not that life-changing.
+
 * DOTTED KEYS
   { options.app: app }  sugar: { options: { app } }
 
@@ -147,36 +171,32 @@ not all of these are good or final ideas.
 * >> COMPOSE
   sugar: f >> g to (x => f(g(x)))
 
-
-MAYBE (but then again maybe not)
-================================
-
-* COMMA-OPTIONAL TERMS
-  f(x y)                commas in arglists and arrays are optional (also objs if newline/shorthand)
-
-* BACKCALLS?
-  x <= proc(2, 4)       sugar: as in livescript
-
 * ++ CONCATENATOR
   sugar: a ++ b to a.concat(b)
 
 * <+ APPENDOR
   sugar: a <+ b to a.push(...b)
 
-* these are likely usurped by do expressions:
 
-  * IF EXPRESSIONS
-    const x = if …        sugar: transforms to ternary
+MAYBE NOT
+=========
 
-  * DELETE EXPRESSIONS
-    const x = delete a.b  sugar: delete returns its value if used where it would be useful
+rough wishlist in order of decreasing likelihood.
 
-  * TRY EXPRESSIONS
-    const x = try danger();       // you only get one expression?
+* BACKCALLS?
+  x <= proc(2, 4)       sugar: as in livescript
 
-* WHITESPACE-SIGNIFICANCE
-  if / for / while / try
-  are allowed whitespace-significant indentation to signify blocks (curlies optional)
-  and do not require parens
-  single-line blocks are available with curlies
+* DELETE EXPRESSIONS
+  const x = delete a.b  sugar: delete returns its value if used where it would be useful
+
+* IF EXPRESSIONS
+  const x = if …        sugar: transforms to ternary
+                        (likely usurped by do exprs)
+
+* TRY EXPRESSIONS
+  const x = try f_();   you only get one expression?
+
+* COMMA-OPTIONAL TERMS
+  f(x y)                commas in arglists and arrays are optional (also objs if newline/shorthand)
+                        (extremely unlikely to happen)
 
