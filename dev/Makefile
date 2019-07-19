@@ -16,7 +16,7 @@ out/%.js: src/%.xjs
 
 commit: clean $(OUT)
 
-out/%.diff: src/%.xjs out/%.js
+out/%.diff: src/%.xjs
 	node babel.js $< --presets=@xjs | diff -u $(patsubst %.diff,%.js,$@) -
 
 diff: $(DIFF)
