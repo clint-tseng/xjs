@@ -1,7 +1,7 @@
 
 
 \\//  ||  //\
-//\\ =// \//     a dumb toy js variant for my own use only.
+//\\ \// \//     a dumb toy js variant for my own use only.
 
 
 PHILOSOPHIE
@@ -54,6 +54,8 @@ IMPLEMENTED
   [ y - 1 for y in ys for { ys } in xs ]  destructuring still works
   [ [ y - 1 for y in x.ys ] for x in xs ] (nonflat comprehension)
 
+  [ do { … } for x in xs ]                use do if you need a block
+
   [ v for v of obj ]                      object-to-array comprehension
   { k: v for _, k of obj }                object-to-object comprehension
                                           _ terms are ignored
@@ -61,9 +63,8 @@ IMPLEMENTED
                                           use brackets around expressions
   { unknown: x for x in xs }              implied literal, though why would you do this?
 
-  [ do { … } for x in xs ]                use do if you need a block
-
   * IMPROVE: messy var naming scope
+  * IMPROVE: do expr won't work for obj comprehensions
   * INCOMPLETE: affects line numbering.
 
 * ACCESS AS FUNCTION
@@ -97,7 +98,7 @@ IMPLEMENTED
   * INCOMPLETE: affects line numbering.
 
 * DECLARATION EXISTENTIAL
-  badly copied from swift's if let due to scoping problems.
+  badly copied from swift's if let with adaptations due to scoping problems.
 
   const x = getX() { something(x); }
   let y = getY() { something(y); }
