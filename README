@@ -113,6 +113,10 @@ IMPLEMENTED
 
   * IMPROVE: reset ref count per scope?
 
+* OPTIONAL CLASSBODY
+  class x;              sugar: class x {}
+  class x extends y;    sugar: class x extends y {}
+
 
 PROBABLY
 ========
@@ -136,10 +140,6 @@ not all of these are good or final ideas.
 
 * DOTTED KEYS
   { options.app: app }  sugar: { options: { app } }
-
-* OPTIONAL CLASSBODY
-  class x;              sugar: class x {}
-  class x extends y;    sugar: class x extends y {}
 
 * NESTED BLOCK COMMENTS
   /* /* x */ */         duh (or ugh take your pick)

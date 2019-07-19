@@ -1204,6 +1204,12 @@ export default class StatementParser extends ExpressionParser {
     const classBody: N.ClassBody = this.startNode();
     classBody.body = [];
 
+    if (this.eat(tt.semi)) {
+      // early exit
+      this.state.classLevel--;
+      return this.finishNode(classBody, "ClassBody");
+    }
+
     this.expect(tt.braceL);
 
     // For the smartPipelines plugin: Disable topic references from outer
